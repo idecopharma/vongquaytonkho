@@ -620,7 +620,7 @@ console.log('TOTAL PRODUCT CODES:', codes.size);
 function classify(it, th){
   if(it.cogs<=0 && it.avg>0)  return {key:'dead', level:'low', label:'Tồn chết',  cls:'b-dead'};
   if(it.avg<=0 && it.cogs>0)  return {key:'fast', level:'good',label:'Bán nhanh', cls:'b-fast'};
-  if(it.avg<=0 && it.cogs<=0) return {key:'na',   level:'na',  label:'—',          cls:''};
+  if(it.avg<=0 && it.cogs<=0) return {key:'na',   level:'low',  label:'Sản phẩm không giao dịch', cls:'b-low'};
   const t=it.turnover;
   if(t>=th.good) return {key:'good',level:'good',label:'Tốt',        cls:'b-good'};
   if(t>=th.mid)  return {key:'mid', level:'mid', label:'Trung bình', cls:'b-mid'};
@@ -632,7 +632,7 @@ const REC={
   low :'Luân chuyển chậm — đẩy mạnh bán/khuyến mãi, giảm nhập, kiểm tra hạn dùng.',
   dead:'Không phát sinh bán — ứ đọng vốn & rủi ro hết hạn; xem xét xả/đổi trả.',
   fast:'Tồn rất thấp so với mức bán — cần nhập bổ sung để tránh đứt hàng.',
-  na  :'Thiếu dữ liệu để đánh giá.'
+  na  :'Sản phẩm không có tồn kho và không phát sinh giá vốn trong kỳ.'
 };
 
 function getCfg(){
@@ -687,48 +687,6 @@ function render(){
   rows.forEach(r=>{ cnt[r.level==='good'?'good':r.level==='mid'?'mid':'low']++; });
   $('#cAll').textContent=cnt.all; $('#cGood').textContent=cnt.good; $('#cMid').textContent=cnt.mid; $('#cLow').textContent=cnt.low;
 
-  
-  // kiểm tra sản phẩm không có giao dịch
-  const zeroStockItems = rows.filter(r =>
-    ((Number(r.A)||0) === 0) &&
-    ((Number(r.B)||0) === 0) &&
-    ((Number(r.cogs)||0) === 0)
-  );
-
-  const na=$('#newAlert');
-
-  if(zeroStockItems.length){
-
-    const names = zeroStockItems
-      .slice(0,6)
-      .map(r=>esc(r.name))
-      .join(', ')
-      + (zeroStockItems.length>6 ? `… (+${zeroStockItems.length-6})` : '');
-
-    na.style.display='flex';
-
-    na.innerHTML=`
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d8413a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 8v4"/>
-        <path d="M12 16h.01"/>
-      </svg>
-
-      <div>
-        <b>SẢN PHẨM ĐANG BÁO ĐỒNG KHÔNG CÓ GIAO DỊCH TRONG 120 NGÀY, CẦN PHẢI KIỂM TRA.</b>
-
-        Có <b>${zeroStockItems.length}</b> sản phẩm có:
-        Tổng đầu kỳ (A) = 0,
-        Tổng cuối kỳ (B) = 0,
-        Giá vốn = 0.
-
-        ${names}
-      </div>
-    `;
-
-  } else {
-    na.style.display='none';
-  }
 
 
   // KPIs
