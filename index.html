@@ -693,7 +693,7 @@ console.log('TOTAL PRODUCT CODES:', codes.size);
 /* ---- Classify (depends on thresholds) ---- */
 function classify(it, th){
   if(it.cogs<=0 && it.avg>0)  return {key:'dead', level:'low', label:'Tồn chết',  cls:'b-dead'};
-  if(it.avg<=0 && it.cogs>0)  return {key:'fast', level:'good',label:'Bán nhanh', cls:'b-fast'};
+  if(it.avg<=0 && it.cogs>0)  return {key:'fast', level:'good',label:'Đã từng bán trong kỳ nhưng rất chậm', cls:'b-fast'};
   if(it.avg<=0 && it.cogs<=0) return {key:'na',   level:'low',  label:'Sản phẩm không giao dịch', cls:'b-low'};
   const t=it.turnover;
   if(t>=th.good) return {key:'good',level:'good',label:'Tốt',        cls:'b-good'};
